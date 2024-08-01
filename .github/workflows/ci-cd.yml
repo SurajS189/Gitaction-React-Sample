@@ -1,45 +1,54 @@
 name: node_ci/cd
 
-
 on:
   push:
     branches: [main]
 
 jobs:
-  print:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Say hello
-        run: echo "Hello, world!"
   build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
-          node-version: '16'  
+          node-version: '16'
       - run: yarn install
       - run: yarn run build
-  
-  docker :
+
+  docker_build_push:
     runs-on: ubuntu-latest
     steps:
-      -
-        name: Set up QEMU
+      - uses: actions/checkout@v3
+      - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
-      -
-        name: Set up Docker Buildx
+      - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
-      -
-        name: Login to Docker Hub
+      - name: Login to Docker Hub
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
-      -
-        name: Build and push
+      - name: Build and push
         uses: docker/build-push-action@v6
         with:
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/react_gitlab_action:latest
-    
+
+  pull_nginx:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Pull Nginx image
+        run: docker pull nginx:latest
+
+  trivy_scan:
+    runs-on: ubuntu-latest
+    needs: pull_nginx
+    steps:
+      - name: Scan for vulnerabilities
+        uses: aquasecurity/trivy-action@v0.8.0
+        with:
+          image: nginx:latest
+          format: json
+      - name: Save vulnerability report
+        run: |
+          trivy image nginx:latest --format json > vulnerability_report.json
