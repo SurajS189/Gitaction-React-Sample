@@ -47,8 +47,9 @@ jobs:
       - name: Scan for vulnerabilities
         uses: aquasecurity/trivy-action@0.20.0
         with:
-          image: nginx:latest
-          format: json
-      - name: Save vulnerability report
-        run: |
-          trivy image nginx:latest --format json > vulnerability_report.json
+          image-ref: nginx:latest
+          format: 'table'
+          exit-code: '1'
+          ignore-unfixed: true
+          vuln-type: 'os,library'
+          severity: 'CRITICAL,HIGH'
