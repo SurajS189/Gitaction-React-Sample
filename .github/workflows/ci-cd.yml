@@ -45,7 +45,7 @@ jobs:
     needs: pull_nginx
     steps:
       - name: Scan for vulnerabilities
-        uses: aquasecurity/trivy-action@v0.8.0
+        uses: aquasecurity/trivy-action@0.20.0
         with:
           image: nginx:latest
           format: json
