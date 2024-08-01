@@ -1,5 +1,6 @@
 name: node_ci/cd
 
+
 on:
   push:
     branches: [main]
@@ -34,7 +35,7 @@ jobs:
       - name: build docker image
         id: build-docker-image
         run: |
-          docker build -f  Dockerfile -t ${{secrets.DOCKERHUB_USERNAME}}/react-gitlab-action:latest .
+          docker build -f  ../Dockerfile -t ${{secrets.DOCKERHUB_USERNAME}}/react-gitlab-action:latest .
           docker push ${{secrets.DOCKERHUB_USERNAME}}/react-gitlab-action:latest 
     
   
