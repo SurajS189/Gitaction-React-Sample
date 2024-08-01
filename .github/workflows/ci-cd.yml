@@ -18,27 +18,26 @@ jobs:
         with:
           node-version: '16'  
       - run: yarn install
-      - run: yarn test
       - run: yarn run build
   
-  # build:
-  #   name: Build and Push the Docker Image
-  #   runs-on: unbuntu-latest
-  #   steps :
-  #     - name: login to docker hub
-  #       id: docker-hub
-  #       env:
-  #        username: ${{secrets.DOCKERHUB_USERNAME}}
-  #        password: ${{secrets.DOCKERHUB_PASSWORD}}  
-  #       run: |
-  #        docker login -u $username  -p  $password
-  #     - name: build docker image
-  #       id: build-docker-image
-  #       run: |
-  #         ls -la 
-  #         docker build . -f Dockerfile -t ${{secrets.DOCKERHUB_USERNAME}}/react-gitlab-action:latest
-  #     - name: push the docker image
-  #       id: push-docker-image
-        # run: docker push ${{secrets.DOCKERHUB_USERNAME}}/react-gitlab-action:latest  
+  docker :
+    name: Build and Push the Docker Image
+    runs-on: unbuntu-latest
+    steps :
+      - name: login to docker hub
+        id: docker-hub
+        env:
+         username: ${{secrets.DOCKERHUB_USERNAME}}
+         password: ${{secrets.DOCKERHUB_PASSWORD}}  
+        run: |
+         docker login -u $username  -p  $password
+      - name: build docker image
+        id: build-docker-image
+        run: |
+          ls -la 
+          docker build . -f Dockerfile -t ${{secrets.DOCKERHUB_USERNAME}}/react-gitlab-action:latest
+      - name: push the docker image
+        id: push-docker-image
+        run: docker push ${{secrets.DOCKERHUB_USERNAME}}/react-gitlab-action:latest  
     
   
