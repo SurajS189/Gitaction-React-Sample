@@ -22,7 +22,7 @@ jobs:
   
   docker :
     name: Build and Push the Docker Image
-    runs-on: unbuntu-latest
+    runs-on: ubuntu-latest
     steps :
       - name: login to docker hub
         id: docker-hub
