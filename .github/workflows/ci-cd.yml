@@ -10,26 +10,35 @@ jobs:
     steps:
       - name: Say hello
         run: echo "Hello, world!"
-        
-  
   build:
-    name: Build and Push the Docker Image
-    runs-on: unbuntu-latest
-    steps :
-      - name: login to docker hub
-        id: docker-hub
-        env:
-         username: ${{secrets.DOCKERHUB_USERNAME}}
-         password: ${{secrets.DOCKERHUB_PASSWORD}}  
-        run: |
-         docker login -u $username  -p  $password
-      - name: build docker image
-        id: build-docker-image
-        run: |
-          ls -la 
-          docker build . -f Dockerfile -t ${{secrets.DOCKERHUB_USERNAME}}/react-gitlab-action:latest
-      - name: push the docker image
-        id: push-docker-image
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '16'  
+      - run: yarn install
+      - run: yarn test
+      - run: yarn run build
+  
+  # build:
+  #   name: Build and Push the Docker Image
+  #   runs-on: unbuntu-latest
+  #   steps :
+  #     - name: login to docker hub
+  #       id: docker-hub
+  #       env:
+  #        username: ${{secrets.DOCKERHUB_USERNAME}}
+  #        password: ${{secrets.DOCKERHUB_PASSWORD}}  
+  #       run: |
+  #        docker login -u $username  -p  $password
+  #     - name: build docker image
+  #       id: build-docker-image
+  #       run: |
+  #         ls -la 
+  #         docker build . -f Dockerfile -t ${{secrets.DOCKERHUB_USERNAME}}/react-gitlab-action:latest
+  #     - name: push the docker image
+  #       id: push-docker-image
         run: docker push ${{secrets.DOCKERHUB_USERNAME}}/react-gitlab-action:latest  
     
   
