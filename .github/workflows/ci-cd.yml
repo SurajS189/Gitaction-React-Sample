@@ -22,20 +22,24 @@ jobs:
       - run: yarn run build
   
   docker :
-    name: Build and Push the Docker Image
     runs-on: ubuntu-latest
-    steps :
-      - name: login to docker hub
-        id: docker-hub
-        env:
-         username: ${{secrets.DOCKERHUB_USERNAME}}
-         password: ${{secrets.DOCKERHUB_PASSWORD}}  
-        run: |
-         docker login -u $username  -p  $password
-      - name: build docker image
-        id: build-docker-image
-        run: |
-          docker build -f  -t ${{secrets.DOCKERHUB_USERNAME}}/react-gitlab-action:latest ../Dockerfile
-          docker push ${{secrets.DOCKERHUB_USERNAME}}/react-gitlab-action:latest 
+    steps:
+      -
+        name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+      -
+        name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      -
+        name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      -
+        name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          push: true
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/React-gitlab-action:latest
     
-  
