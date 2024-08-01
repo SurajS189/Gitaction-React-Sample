@@ -34,7 +34,7 @@ jobs:
       - name: build docker image
         id: build-docker-image
         run: |
-          docker build -t ${{secrets.DOCKERHUB_USERNAME}}/react-gitlab-action:latest .
+          docker build -f ../Dockerfile -t ${{secrets.DOCKERHUB_USERNAME}}/react-gitlab-action:latest .
           docker push ${{secrets.DOCKERHUB_USERNAME}}/react-gitlab-action:latest 
     
   
