@@ -56,40 +56,37 @@ jobs:
   
   deploy:
     runs-on: ubuntu-latest
-    steps:
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{secrets.AWS_REGION}}
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ secrets.AWS_REGION }}
 
-      - name: Pull the image
-        run: |
-          docker pull surajjsingh970/react_gitlab_action:latest
-      
-      - name: Login to Amazon ECR
-        id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v1
-      - name: Tag the image
-        run: |
-          docker tag surajjsingh970/react_gitlab_action:latest $ECR_REPOSITORY:$IMAGE_TAG
-        env:
-          ECR_REPOSITORY: ${{ steps.login-ecr.outputs.registry }}/github_react
-          IMAGE_TAG: 1.1
+    - name: Pull the image
+      run: |
+        docker pull surajjsingh970/react_gitlab_action:latest
 
-      - name: Push the image to ECR
-        run: |
-          docker push $ECR_REGISTRY/$ECRREPOSITORY:$IMAGE_TAG
+    - name: Login to Amazon ECR
+      id: login-ecr
+      uses: aws-actions/amazon-ecr-login@v1
 
-      - name: Update kube config
-        run: aws eks update-kubeconfig --name github-ekscluster
+    - name: Tag the image
+      run: |
+        docker tag surajjsingh970/react_gitlab_action:latest $ECR_REPOSITORY:$IMAGE_TAG
+      env:
+        ECR_REPOSITORY: ${{ steps.login-ecr.outputs.registry }}/github_react
+        IMAGE_TAG: 1.1
 
-      - name: Deploy to EKS
-        run: |
-          kubectl apply -f deployment.yaml
-          kubectl apply -f service.yaml
+    - name: Push the image to ECR
+      run: |
+        docker push $ECR_REPOSITORY:$IMAGE_TAG
 
-  
-  
-      
+    - name: Update kube config
+      run: |
+        aws eks update-kubeconfig --name github-ekscluster
+
+    - name: Deploy to EKS
+      run: |
+        kubectl apply -f deployment.yaml
+        kubectl apply -f service.yaml
